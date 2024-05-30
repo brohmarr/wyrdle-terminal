@@ -1,6 +1,0 @@
-apple
-black
-learn
-mango
-quake
-snake

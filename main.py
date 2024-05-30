@@ -5,22 +5,24 @@
 
 import pathlib
 import random
+from string import ascii_letters
 
 
 # Reading the list of words available.
-WORDS = pathlib.Path("words.txt")
+WORDS = pathlib.Path("wordlist.txt")
 
 # Turning the retrieved words into a list for the secret word to be selected from.
 word_list = [
     word.upper()
-    for word in WORDS.read_text(encoding="utf-8").strip().split("\n")
+    for word in WORDS.read_text(encoding="utf-8").split("\n")
+    if len(word) == 5 and all(letter in ascii_letters for letter in word)
 ]
 
 # Selecting a secret word from the word list.
 word = random.choice(word_list)
 
 # For testing purposes...
-print(word)
+print("TESTING: THE SECRET WORD IS", word)
 
 ATTEMPTS = 6
 
