@@ -6,7 +6,6 @@ devil
 druid
 dryad
 eagle
-elite
 fiend
 ghost
 ghoul
