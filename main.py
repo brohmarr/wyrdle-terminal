@@ -32,6 +32,7 @@ ATTEMPTS = 6
 # If the user exausts all of their attempts, it shows them the secret
 # word.
 def main():
+
     # Pre-process.
     word = get_a_random_word()
     guesses = []
@@ -65,6 +66,7 @@ def main():
         game_over(word)
 
 def get_a_random_word():
+
     word = random.choice(word_list)
 
     # TODO: Adding this for testing purposes, remove it later...
@@ -73,6 +75,7 @@ def get_a_random_word():
     return word
 
 def check_guess(guess, word):
+
     if guess == word:
         print("Correct!")
         
@@ -90,6 +93,7 @@ def check_guess(guess, word):
     return False
 
 def game_over(word):
+    
     print(f"\nThe correct word was {word}.")
 
 if __name__ == "__main__":
