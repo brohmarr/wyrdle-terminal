@@ -6,18 +6,17 @@
 import pathlib
 import random
 from string import ascii_letters
+from rich.console import Console
+from rich.theme import Theme
 
+# Creating a variable to control rich's print function.
+console = Console(width=48, height=16, theme=Theme({"error": "red", "tip": "blue"}))
 
 # This variable holds the path to the wordlist.
 WORDS = pathlib.Path("wordlist.txt")
 
-# This list serves the purpose of letting us choose a random word from
-# the wordlist.
-word_list = [
-    word.upper()
-    for word in WORDS.read_text(encoding="utf-8").split("\n")
-    if len(word) == 5 and all(letter in ascii_letters for letter in word)
-]
+# Choosing the secret word length for the game.
+WORD_LENGTH = 5
 
 # Choosing the number of attempts available to the user.
 ATTEMPTS = 6
@@ -35,66 +34,97 @@ def main():
 
     # Pre-process.
     word = get_a_random_word()
-    guesses = []
+    guesses = ["_" * WORD_LENGTH] * ATTEMPTS
+    words_guessed = []
 
     # Process.
-    for attempt in range(1, ATTEMPTS + 1):
-        guess = input(f"\nGuess {attempt}: ").upper()
-
+    for idx in range(ATTEMPTS):
+        tip_message = ""
         while True:
-            if len(guess) != 5:
-                input_message = "Your guess must contain five letters, please, try again: "
-                guess = input(input_message).upper()
+            display_game_page(idx=idx, word=word, guesses=guesses)
 
-                continue
-            if guess in guesses:
-                input_message = "You already guessed that word, please, try again: "
-                guess = input(input_message).upper()
-
-                continue
-
-            break
-        
-        guesses.append(guess)
-        guessed_correctly = check_guess(guess, word)
-
-        if guessed_correctly:        
+            if tip_message != "":
+                console.print(tip_message, style="tip")
+            guess = console.input("\nGuess word: ").upper()
+            
+            is_guess_valid, tip_message = check_for_valid_guess(guess=guess, words_guessed=words_guessed)
+            if is_guess_valid:
+                guesses[idx] = guess
+                words_guessed.append(guess)
+                break
+                
+        if guesses[idx] == word:
             break
     
     # Post-process.
-    else:
-        game_over(word)
+    game_over(idx=idx, word=word, guesses=guesses, guessed_correctly=guesses[idx] == word)
 
 def get_a_random_word():
 
-    word = random.choice(word_list)
+    if word_list := [
+        word.upper()
+        for word in WORDS.read_text(encoding="utf-8").split("\n")
+        if len(word) == WORD_LENGTH and all(letter in ascii_letters for letter in word)
+    ]:
+        return random.choice(word_list)
+    else:
+        console.print(f"No words of length {WORD_LENGTH} in the word list.", style="error")
 
-    # TODO: Adding this for testing purposes, remove it later...
-    print("TESTING: THE SECRET WORD IS", word)
+        raise SystemExit()
 
-    return word
+def display_game_page(idx, word, guesses):
 
-def check_guess(guess, word):
+    refresh_page(headline=f"Guess {idx+1}", word=word)
+    show_guesses(guesses, word)
 
-    if guess == word:
-        print("Correct!")
-        
-        return True
+def refresh_page(headline, word):
 
-    correct_letters = {letter for letter, other_letter in zip(guess, word)
-                       if letter == other_letter}
-    misplaced_letters = (set(guess) & set(word) - correct_letters)
-    wrong_letters = set(guess) - set(word)
-
-    print("Correct letters:", ", ".join(correct_letters))
-    print("Misplaced letters:", ", ".join(misplaced_letters))
-    print("Wrong letters:", ", ".join(wrong_letters))
-
-    return False
-
-def game_over(word):
+    console.clear()
     
-    print(f"\nThe correct word was {word}.")
+    # TODO: Adding this for testing purposes, remove it later...
+    console.print(f"TESTING: The secret word is {word}!\n")
+    
+    console.rule(f":mage: {headline} :mage:\n")
+
+def show_guesses(guesses, word):
+
+    console.print()
+    for guess in guesses:
+        styled_guesses = []
+        for letter, correct in zip(guess, word):
+            if letter == "_":
+                style = "bold white"
+            elif letter == correct:
+                style = "bold white on green"
+            elif letter in word:
+                style = "bold white on yellow"
+            else:
+                style = "bold white on #676767"
+            styled_guesses.append(f"[{style}]{letter}[/]")
+        
+        console.print("".join(styled_guesses), justify="center")
+
+def check_for_valid_guess(guess, words_guessed):
+
+    if len(guess) != WORD_LENGTH:
+        return False, f"\nTip: the word is {WORD_LENGTH} letters long."
+    elif guess in words_guessed:
+        return False, "\nTip: you already guessed that word."
+    else:
+        for letter in guess:
+            if not letter in ascii_letters:
+                return False, "\nTip: only letters are accepted as characters."
+    
+    return True, None
+
+def game_over(idx, word, guesses, guessed_correctly):
+    
+    display_game_page(idx=idx, word=word, guesses=guesses)
+
+    if guessed_correctly:
+        console.print(f"\nCongrats! You guessed the word! :tada:")
+    else:
+        console.print(f"\nSorry, the secret word was {word}.")
 
 if __name__ == "__main__":
     main()
