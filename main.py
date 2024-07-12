@@ -3,14 +3,15 @@
 # 
 # Python v3.12.3
 
+import contextlib
 import pathlib
 import random
-from string import ascii_letters
+from string import ascii_letters, ascii_uppercase
 from rich.console import Console
 from rich.theme import Theme
 
 # Creating a variable to control rich's print function.
-console = Console(width=48, height=16, theme=Theme({"error": "red", "tip": "blue"}))
+console = Console(width=51, height=16, theme=Theme({"error": "red", "tip": "blue"}))
 
 # This variable holds the path to the wordlist.
 WORDS = pathlib.Path("wordlist.txt")
@@ -37,24 +38,25 @@ def main():
     guesses = ["_" * WORD_LENGTH] * ATTEMPTS
     words_guessed = []
 
-    # Process.
-    for idx in range(ATTEMPTS):
-        tip_message = ""
-        while True:
-            display_game_page(idx=idx, word=word, guesses=guesses)
+    # Process (main loop).
+    with contextlib.suppress(KeyboardInterrupt):
+        for idx in range(ATTEMPTS):
+            tip_message = ""
+            while True:
+                display_game_page(idx=idx, word=word, guesses=guesses)
 
-            if tip_message != "":
-                console.print(tip_message, style="tip")
-            guess = console.input("\nGuess word: ").upper()
-            
-            is_guess_valid, tip_message = check_for_valid_guess(guess=guess, words_guessed=words_guessed)
-            if is_guess_valid:
-                guesses[idx] = guess
-                words_guessed.append(guess)
-                break
+                if tip_message != "":
+                    console.print(tip_message, style="tip")
+                guess = console.input("\nGuess word: ").upper()
                 
-        if guesses[idx] == word:
-            break
+                is_guess_valid, tip_message = check_for_valid_guess(guess=guess, words_guessed=words_guessed)
+                if is_guess_valid:
+                    guesses[idx] = guess
+                    words_guessed.append(guess)
+                    break
+                    
+            if guesses[idx] == word:
+                break
     
     # Post-process.
     game_over(idx=idx, word=word, guesses=guesses, guessed_correctly=guesses[idx] == word)
@@ -81,14 +83,15 @@ def refresh_page(headline, word):
 
     console.clear()
     
-    # TODO: Adding this for testing purposes, remove it later...
-    console.print(f"TESTING: The secret word is {word}!\n")
+    # Leaving this here for testing purposes...
+    # console.print(f"TESTING: The secret word is {word}!\n")
     
     console.rule(f":mage: {headline} :mage:\n")
 
 def show_guesses(guesses, word):
 
     console.print()
+    letter_status = {letter: letter for letter in ascii_uppercase}
     for guess in guesses:
         styled_guesses = []
         for letter, correct in zip(guess, word):
@@ -101,8 +104,11 @@ def show_guesses(guesses, word):
             else:
                 style = "bold white on #676767"
             styled_guesses.append(f"[{style}]{letter}[/]")
+            if letter != "_":
+                letter_status[letter] = f"[{style}]{letter}[/]"
         
         console.print("".join(styled_guesses), justify="center")
+    console.print("\n" + " ".join(letter_status.values()), justify="center")
 
 def check_for_valid_guess(guess, words_guessed):
 
