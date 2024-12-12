@@ -1,8 +1,3 @@
-# Wyrdle (Terminal)
-# by: @brohmarr
-# 
-# Python v3.12.3
-
 import contextlib
 import pathlib
 import random
