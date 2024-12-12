@@ -1,19 +1,24 @@
 # Wyrdle (Terminal)
 
-🟡 **Status:** On Hold
+🔵 **Status:** Done
 
 A clone of the famous game "Wordle", that runs in the terminal.
 
-I developed this project to study a bit about "[Rich](https://github.com/Textualize/rich)", a Python library for rich text and beautiful formatting in the terminal.
+I developed this project to study [Rich](https://github.com/Textualize/rich), a Python library for "rich text and beautiful formatting in the terminal".
 
-I intend to use this project as a base to start learning about "[Kivy](https://github.com/kivy/kivy)" in the near future, and port this project to mobile devices (for now, this idea is on hold, because I'm studying web development with Django).
+I intend to use this project as a base to start learning about [Kivy](https://github.com/kivy/kivy) in the near future, and port this project to mobile devices.
 
-## Installation
-You can clone this repository using the following command in the terminal:
+**NOTE:** This idea is currently on hold as I'm focusing on web development.
 
-`git clone https://github.com/brohmarr/wyrdle-terminal`
+## Requirements
 
-Or simply download the repository as a '.zip', using the green "<> Code" button above.
+* Python (v3.12.5)
+* Packages listed in [requirements.txt](requirements.txt), that can be installed with the following command:
+    * ```pip install -r requirements.txt```
 
 ## Usage
-Run the 'main.py' file and start playing! You can check the available words in the 'wordlist.txt' file or change them automatically from another text file using the 'create_wordlist.py' script (you can read its documentation in the file itself).
+
+* Clone this repository and cd into it in the terminal...
+    * ... or download the repository as a ".zip" file, using the green "<> Code" button above, unzip it and enter the unzipped folder;
+* Run the [main.py](main.py) file with the command below and start playing! You can check the available words in [wordlist.txt](wordlist.txt) or change them automatically from another text file using the [create_wordlist.py](create_wordlist.py) script (you can read its documentation in the file itself).
+    * ```git clone https://github.com/brohmarr/wyrdle-terminal```
