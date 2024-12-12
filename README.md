@@ -1,4 +1,7 @@
 # Wyrdle (Terminal)
+
+🟡 **Status:** On Hold
+
 A clone of the famous game "Wordle", that runs in the terminal.
 
 I developed this project to study a bit about "[Rich](https://github.com/Textualize/rich)", a Python library for rich text and beautiful formatting in the terminal.
